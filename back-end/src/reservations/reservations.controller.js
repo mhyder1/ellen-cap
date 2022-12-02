@@ -36,14 +36,12 @@ function hasPeople(req, res, next) {
   const people = Number(req.body.data.people)
   if (people >= 1) {
      return next()
-    }
-    next({status: 400, message: "Number of people in party must be more than 1."})
   }
+  next({status: 400, message: "Number of people in party must be more than 1."})
+}
 
 
 async function create(req, res) {
-  console.log("in the controller")
-  console.log("body", req.body)
   const newReservation = await reservationsService.create(req.body.data);
   res.status(201).json({
     data: newReservation,
@@ -51,8 +49,10 @@ async function create(req, res) {
 }
 
 async function list(req, res) {
+  const reservationDate = req.query.date;
+  const data = await reservationsService.list(reservationDate);
   res.json({
-    data: [],
+    data,
   });
 }
 
