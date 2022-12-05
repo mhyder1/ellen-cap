@@ -4,7 +4,6 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import Dashboard from "../dashboard/Dashboard";
 import NewReservation from "../reservations/NewReservation";
 import NotFound from "./NotFound";
-import { today } from "../utils/date-time";
 
 /**
  * Defines all the routes for the application.

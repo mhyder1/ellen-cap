@@ -67,11 +67,11 @@ function NewReservation() {
                 </div>
                 <div className="mb-3">
                     <label for="reservation_date" className="form-label">Reservation Date</label>
-                    <input placeholder="Reservation Date" type="date" className="form-control" id="reservation_date" name="reservation_date" value={dateOfReservation} onChange={handleDateOfReservationChange} />
+                    <input type="date" className="form-control" id="reservation_date" name="reservation_date" placeholder="YYYY-MM-DD" pattern="\d{4}-\d{2}-\d{2}" value={dateOfReservation} onChange={handleDateOfReservationChange} />
                 </div>
                 <div className="mb-3">
                     <label for="reservation_time" className="form-label">Reservation Time</label>
-                    <input placeholder="Reservation Time" type="time" className="form-control" id="reservation_time" name="reservation_time" value={timeOfReservation} onChange={handleTimeOfReservationChange} />
+                    <input type="time" className="form-control" placeholder="HH:MM" pattern="[0-9]{2}:[0-9]{2}" id="reservation_time" name="reservation_time" value={timeOfReservation} onChange={handleTimeOfReservationChange} />
                 </div>
                 <div className="mb-3">
                     <label for="people" className="form-label">Number Of People</label>
