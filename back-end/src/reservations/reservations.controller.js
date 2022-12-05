@@ -32,22 +32,30 @@ function hasOnlyValidProperties(req, res, next) {
 
 function validDate(req, res, next) {
   const date = new Date(req.body.data.reservation_date.replace("-", "/"));
-  // testing if date is a date, date is not a tuesday, date is not in the past
+  // testing if date is a date
+  if (!(date instanceof Date) || isNaN(date)) {
+    return next({
+      status: 400,
+      message: `Invalid field(s): reservation_date`,
+    });
+  }
+  // date is not in the past
   const today = new Date();
-  if (date.getDate() < today.getDate()) {
+  // need to pass the "toDateString()" to a new date object to remove the time
+  if (new Date(date.toDateString()) < new Date(today.toDateString())) {
     return next({
       status: 400,
-      message: `Invalid field(s): reservation_date`,
+      message: `Invalid field(s): reservation_date must be in the future`,
     });
   }
-  if (date instanceof Date && !isNaN(date) && date.getDay() != 2) {
-    next();
-  } else {
+  // date is not a tuesday
+  if (date.getDay() == 2) {
     return next({
       status: 400,
-      message: `Invalid field(s): reservation_date`,
+      message: `Invalid field(s): change reservation_date. restaurant is closed on tuesdays. `,
     });
   }
+  return next();
 }
 
 // function validTime(req, res, next) {
