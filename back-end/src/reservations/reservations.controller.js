@@ -60,7 +60,6 @@ function validDate(req, res, next) {
 
 function validTime(req, res, next) {
   const isValid = /^([0-1][0-9]|2[0-3]):([0-5][0-9])$/.test(req.body.data.reservation_time);
-  // const timeFormat = /\d\d:\d\d/;
   if (isValid) {
     return next();
   }
@@ -69,7 +68,33 @@ function validTime(req, res, next) {
     message: `Invalid field(s): reservation_time`,
   });
 }
-
+// reservation time must be between 1030 and 2130
+function correctTime(req, res, next) {
+  let time = req.body.data.reservation_time;
+  time = time.replace(":", "");
+  if (time < 1030) {
+    return next({
+      status: 400,
+      message: `The restaurant opens at 10:30 AM`,
+    });
+  } else if (time > 2130) {
+    return next({
+      status: 400,
+      message: `We do not accept reservations after 9:30 PM`,
+    });
+  }
+  const currentTime = new Date();
+  const dataTime = new Date(time);
+  console.log(dataTime.getTime());
+  console.log(currentTime.getTime());
+  if (dataTime.getTime() < currentTime.getTime()) {
+    return next({
+      status: 400,
+      message: `Reservation must be in the future`,
+    });
+  }
+  return next();
+}
 
 function hasPeople(req, res, next) {
   const people = Number(req.body.data.people)
@@ -81,7 +106,7 @@ function hasPeople(req, res, next) {
 }
 
 function peopleNumber(req, res, next) {
-  // checks the type of the data coming through, because we want a string version of a number to fail (ie, "2" should fail)
+  // checks the type of the data coming through, because a string version of a number should fail (ie, "2" should fail)
   if (typeof req.body.data.people !== "number") {
     return next({status: 400, message: `Invalid field(s): people amount must be a number.`})
   }
@@ -104,5 +129,5 @@ async function list(req, res) {
 
 module.exports = {
   list: asyncErrorBoundary(list),
-  create: [hasOnlyValidProperties, hasRequiredProperties, hasPeople, peopleNumber, validDate, validTime, asyncErrorBoundary(create)],
+  create: [hasOnlyValidProperties, hasRequiredProperties, hasPeople, peopleNumber, validDate, validTime, correctTime, asyncErrorBoundary(create)],
 };
