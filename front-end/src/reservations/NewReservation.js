@@ -47,7 +47,6 @@ function NewReservation() {
     }
 
     // This is the form for creating a new reservation.
-
     return (
         <> 
             <h1>New Reservation</h1>
