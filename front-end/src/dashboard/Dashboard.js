@@ -72,6 +72,7 @@ function Dashboard() {
       <th scope="row">{table.table_id}</th>
       <td>{table.table_name}</td>
       <td>{table.capacity}</td>
+      <td data-table-id-status={table.table_id}>{table.is_occupied ? "Occupied" : "Free"}</td>
     </tr>
   ));
 
@@ -115,6 +116,7 @@ function Dashboard() {
                 <th scope="col">#</th>
                 <th scope="col">Table Name</th>
                 <th scope="col">Capacity</th>
+                <th scope="col">Status</th>
               </tr>
             </thead>
             <tbody>
