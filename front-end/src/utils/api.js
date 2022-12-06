@@ -81,7 +81,7 @@ export async function createReservation(reservation, signal) {
 }
 
 
-//retrieves list of all tables ? if needed, but I think it is needed for the dashboard.
+//retrieves list of all tables ??? unsure but I think it is needed for the dashboard.
 export async function listTables(params, signal) {
   const url = new URL(`${API_BASE_URL}/tables`);
   Object.entries(params).forEach(([key, value]) =>

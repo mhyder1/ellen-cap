@@ -11,7 +11,8 @@ async function create(newTable) {
 
 async function list() {
     return knex("tables")
-    .select("*");
+    .select("*")
+    .orderBy("table_name");
 }
 
 

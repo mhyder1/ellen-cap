@@ -38,6 +38,7 @@ function NewTable() {
     return (
         <>
             <h1>New Table</h1>
+            <ErrorAlert error={error} />
             <form onSubmit={submitHandler}>
             <div className="mb-3">
                     <label for="table_name" className="form-label">Table Name</label>
