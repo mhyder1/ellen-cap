@@ -3,6 +3,9 @@ const reservationsService = require("./reservations.service.js");
 const hasProperties = require("../errors/hasProperties");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
+
+//validations below
+
 const hasRequiredProperties = hasProperties("first_name", "last_name", "mobile_number", "reservation_date", "reservation_time", "people");
 
 const VALID_PROPERTIES = [
@@ -84,9 +87,7 @@ function correctTime(req, res, next) {
     });
   }
   const currentTime = new Date();
-  const dataTime = new Date(time);
-  console.log(dataTime.getTime());
-  console.log(currentTime.getTime());
+  const dataTime = new Date(`${req.body.data.reservation_date.replace("-", "/")} ${req.body.data.reservation_time}`);
   if (dataTime.getTime() < currentTime.getTime()) {
     return next({
       status: 400,
@@ -107,12 +108,14 @@ function hasPeople(req, res, next) {
 
 function peopleNumber(req, res, next) {
   // checks the type of the data coming through, because a string version of a number should fail (ie, "2" should fail)
-  if (typeof req.body.data.people !== "number") {
+  if (typeof req.body.data.people == "number") {
     return next({status: 400, message: `Invalid field(s): people amount must be a number.`})
   }
   return next();
 }
 
+
+//validations above
 
 async function create(req, res) {
   const newReservation = await reservationsService.create(req.body.data);
