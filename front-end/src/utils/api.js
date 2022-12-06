@@ -101,3 +101,14 @@ export async function createTable(table, signal) {
   };
   return await fetchJson(url, options);
 }
+
+//seats a table
+export async function seatTable(table_id, reservation_id) {
+  const url = `/tables/${table_id}/seat/`;
+  const options = {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ data: reservation_id }),
+  };
+  return await fetchJson(url, options);
+}
