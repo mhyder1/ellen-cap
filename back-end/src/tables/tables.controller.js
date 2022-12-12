@@ -30,10 +30,18 @@ function hasOnlyValidProperties(req, res, next) {
 
 function hasCapacity(req, res, next) {
     const capacity = Number(req.body.data.capacity)
-    if (capacity > 1 ) {
+    if (capacity > 0 ) {
         return next()
     }
     next({status: 400, message: "capactiy must be at least 1 person"})
+}
+
+function hasNameLength(req, res, next) {
+  const name = Number(req.body.data.table_name)
+  if (name.length > 1 ) {
+      return next()
+  }
+  next({status: 400, message: "capactiy must be at least 1 person"})
 }
 
 function tableExists(req, res, next) {
@@ -80,7 +88,7 @@ async function list(req, res) {
 
 
 module.exports = {
-    create: [hasOnlyValidProperties, hasRequiredProperties, hasCapacity, asyncErrorBoundary(create)],
+    create: [hasOnlyValidProperties, hasRequiredProperties, hasCapacity, hasNameLength, asyncErrorBoundary(create)],
     list: asyncErrorBoundary(list),
     update: [tableExists, seatReservation],
 };
