@@ -36,8 +36,8 @@ async function fetchJson(url, options, onCancel) {
     if (response.status === 204) {
       return null;
     }
-
     const payload = await response.json();
+    console.log("got payload", payload)
 
     if (payload.error) {
       return Promise.reject({ message: payload.error });
@@ -103,12 +103,13 @@ export async function createTable(table, signal) {
 }
 
 //seats a table
-export async function seatTable(table_id, reservation_id) {
-  const url = `/tables/${table_id}/seat/`;
+export async function seatTable(table_id, reservation_id, signal) {
+  const url = `${API_BASE_URL}/tables/${table_id}/seat/`;
   const options = {
     method: "PUT",
     headers,
-    body: JSON.stringify({ data: reservation_id }),
+    body: JSON.stringify({ data: {reservation_id} }),
+    signal,
   };
   return await fetchJson(url, options);
 }

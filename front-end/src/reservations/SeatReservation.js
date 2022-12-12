@@ -30,7 +30,10 @@ function SeatReservation() {
         setSelectedTable(value);
     }
 
+    console.log(selectedTable);
+
     function submitHandler() {
+        console.log(selectedTable)
         seatTable(selectedTable, params.reservation_id).then(() => {
             history.push(`/dashboard`);
         })
@@ -54,8 +57,9 @@ function SeatReservation() {
             onChange={changeHandler}
             required={true}
           >
+              <option value="">Select a table</option>
             {tables.map((table) => {
-                return <option value={table.table_id}>{`${table.table_name} - ${table.capacity}`}</option>
+                return <option value={table.table_id}>{`${table.table_name} - ${table.capacity} people`}</option>
             })}
           </select>
             <button 

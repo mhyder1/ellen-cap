@@ -36,7 +36,32 @@ function hasCapacity(req, res, next) {
     next({status: 400, message: "capactiy must be at least 1 person"})
 }
 
+function tableExists(req, res, next) {
+  tablesService
+  .read(req.params.table_id)
+  .then((table) => {
+      if (table) {
+          res.locals.table = table;
+          return next();
+      }
+      next({ status: 404, message: `Table cannot be found.` });
+  })
+  .catch(next);
+}
+
 //validations above
+
+async function seatReservation(req, res, next) {
+  const updatedTable = {
+    ...req.body.data,
+    table_id: res.locals.table.table_id,
+  };
+  console.log(updatedTable)
+  const table = await tablesService.update(updatedTable);
+  res.status(201).json({
+    data: table,
+  });
+}
 
 
 async function create(req, res) {
@@ -57,4 +82,5 @@ async function list(req, res) {
 module.exports = {
     create: [hasOnlyValidProperties, hasRequiredProperties, hasCapacity, asyncErrorBoundary(create)],
     list: asyncErrorBoundary(list),
+    update: [tableExists, seatReservation],
 };
