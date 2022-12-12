@@ -21,11 +21,14 @@ async function list() {
 
 //put request to update a table AKA to seat a table:
 async function update(updatedTable) {
-    console.log("here now")
     return await knex("tables")
     .select("*")
     .where({ table_id: updatedTable.table_id })
     .update(updatedTable, "*");
+}
+
+async function destroy(table_id) {
+    return knex("tables").where({ table_id }).del();
 }
 
 
@@ -34,4 +37,5 @@ module.exports = {
     list,
     update,
     read,
+    destroy,
 }

@@ -44,6 +44,13 @@ function hasNameLength(req, res, next) {
   next({status: 400, message: "capactiy must be at least 1 person"})
 }
 
+function tableOccupied(req, res, next) {
+  if (res.locals.table.reservation_id) {
+    return next();
+  }
+  next({ status: 400, message: `Table is not occupied.` });
+}
+
 function tableExists(req, res, next) {
   tablesService
   .read(req.params.table_id)
@@ -86,9 +93,19 @@ async function list(req, res) {
     });
   }
 
+function destroy(req, res, next) {
+  console.log("we here")
+  const data = await tablesService.delete(res.locals.table.table_id);
+  reviewsService
+  res.json({
+      data,
+  });
+}
+
 
 module.exports = {
     create: [hasOnlyValidProperties, hasRequiredProperties, hasCapacity, hasNameLength, asyncErrorBoundary(create)],
     list: asyncErrorBoundary(list),
     update: [tableExists, seatReservation],
+    destroy: [tableExists, tableOccupied, destroy],
 };
