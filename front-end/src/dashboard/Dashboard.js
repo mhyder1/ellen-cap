@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { listReservations } from "../utils/api";
+import { finishTable, listReservations, updateReservationStatus } from "../utils/api";
 import { listTables } from "../utils/api";
 import { useParams } from "react-router-dom";
 import ErrorAlert from "../layout/ErrorAlert";
@@ -24,7 +24,7 @@ function Dashboard() {
   function loadDashboard(date) {
     const abortController = new AbortController();
     setError(null);
-    listReservations({ date }, abortController.signal)
+    listReservations({ reservation_date: date }, abortController.signal)
       .then(setReservations)
       .catch(setError);
     listTables(abortController.signal)
@@ -53,28 +53,51 @@ function Dashboard() {
     history.push(`/dashboard/${currentDate}`)
   }
 
-  
-  const reservationsTable = reservations.map((reservation) => (
-    <tr key={reservation.reservation_id}>
-      <th scope="row">{reservation.reservation_id}</th>
-      <td>{reservation.first_name}</td>
-      <td>{reservation.last_name}</td>
-      <td>{reservation.mobile_number}</td>
-      <td>{reservation.reservation_date}</td>
-      <td>{reservation.reservation_time}</td>
-      <td>{reservation.people}</td>
-      <td><a href={`/reservations/${reservation.reservation_id}/seat`} className="btn btn-primary mr-2">Seat</a></td>
-    </tr>
-  ));
+  async function finishHandler(table) {
+    const abortController = new AbortController();
+    // confirmation alert
+    // https://stackoverflow.com/questions/9334636/how-to-create-a-dialog-with-ok-and-cancel-options
+    if (window.confirm('Is this table ready to seat new guests? This cannot be undone.')) {
+      const date = params.reservationDate || today();
+      finishTable(table)
+        .catch(setError);
+      updateReservationStatus(table.reservation_id, "finished")
+        .then(() => loadDashboard(date))
+        .catch(setError)
+    } else {
+      // do nothing with cancel, it automatically closes alert
+    }
+  }
 
-  const tablesTable = tables.map((table) => (
-    <tr key={table.table_id}>
+  
+  const reservationsTable = reservations
+    .filter((reservation) => {
+      return reservation.reservation_status !== "finished"}
+    )
+    .map((reservation) => (
+      <tr key={reservation.reservation_id}>
+        <th scope="row">{reservation.reservation_id}</th>
+        <td>{reservation.first_name}</td>
+        <td>{reservation.last_name}</td>
+        <td>{reservation.mobile_number}</td>
+        <td>{reservation.reservation_date}</td>
+        <td>{reservation.reservation_time}</td>
+        <td>{reservation.people}</td>
+        <td data-reservation-id-status={reservation.reservation_id}>{reservation.reservation_status}</td>
+        {reservation.reservation_status === "booked" && <td><a href={`/reservations/${reservation.reservation_id}/seat`} className="btn btn-primary mr-2">Seat</a></td>}
+      </tr>
+    ));
+
+  const tablesTable = tables.map((table) => {    
+    return <tr key={table.table_id}>
       <th scope="row">{table.table_id}</th>
       <td>{table.table_name}</td>
       <td>{table.capacity}</td>
-      <td data-table-id-status={table.table_id}>{table.is_occupied ? "Occupied" : "Free"}</td>
+      <td data-table-id-status={table.table_id}>{table.reservation_id ? "Occupied" : "Free"}</td>
+      {/* Only display this button on tables that have a reservation_id attached (meaning they have been seated) */}
+      <td data-table-id-finish={table.table_id}>{table.reservation_id ? <button type="button" className="btn btn-primary mr-2" onClick={() => finishHandler(table)}>Finish</button> : ""}</td>
     </tr>
-  ));
+});
 
 
   return (
@@ -101,6 +124,7 @@ function Dashboard() {
                 <th scope="col">Reservation Date</th>
                 <th scope="col">Reservation Time</th>
                 <th scope="col">Number Of People</th>
+                <th scope="col">Status</th>
                 <th scope="col"></th>
               </tr>
             </thead>
@@ -117,6 +141,7 @@ function Dashboard() {
                 <th scope="col">Table Name</th>
                 <th scope="col">Capacity</th>
                 <th scope="col">Status</th>
+                <th scope="col"></th>
               </tr>
             </thead>
             <tbody>

@@ -78,16 +78,18 @@ function NewReservation() {
                 </div>
                 <div>
                     <button 
-                    type="button"
-                    className="btn btn-secondary mr-2"
-                    onClick={cancelHandler}
-                    >Cancel
+                        type="button"
+                        className="btn btn-secondary mr-2"
+                        onClick={cancelHandler}
+                    >
+                        Cancel
                     </button>
                     <button
-                    type="submit"
-                    className="btn btn-primary"
-                    onClick={submitHandler}
-                    >Submit
+                        type="submit"
+                        className="btn btn-primary"
+                        onClick={submitHandler}
+                    >
+                        Submit
                     </button>
                 </div>
             </form>

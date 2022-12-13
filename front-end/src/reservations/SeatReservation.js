@@ -4,7 +4,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import ErrorAlert from "../layout/ErrorAlert";
-import { listTables, seatTable } from "../utils/api";
+import { listTables, seatTable, updateReservation, updateReservationStatus } from "../utils/api";
 
 function SeatReservation() {
     const [tables, setTables] = useState([]);
@@ -30,11 +30,10 @@ function SeatReservation() {
         setSelectedTable(value);
     }
 
-    console.log(selectedTable);
-
     function submitHandler() {
-        console.log(selectedTable)
-        seatTable(selectedTable, params.reservation_id).then(() => {
+        seatTable(selectedTable, params.reservation_id)
+            .catch(setError);
+        updateReservationStatus(params.reservation_id, "seated").then(() => {
             history.push(`/dashboard`);
         })
         .catch(setError);
