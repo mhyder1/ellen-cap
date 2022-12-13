@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { finishTable, listReservations, updateReservationStatus } from "../utils/api";
+import {
+  finishTable,
+  listReservations,
+  updateReservationStatus,
+} from "../utils/api";
 import { listTables } from "../utils/api";
 import { useParams } from "react-router-dom";
 import ErrorAlert from "../layout/ErrorAlert";
@@ -18,7 +22,7 @@ function Dashboard() {
     // dashboard by default lists all reservations for today
     // if a date is passed in, lists all for that date
     const date = params.reservationDate || today();
-    loadDashboard(date)
+    loadDashboard(date);
   }, [params]);
 
   function loadDashboard(date) {
@@ -27,53 +31,52 @@ function Dashboard() {
     listReservations({ reservation_date: date }, abortController.signal)
       .then(setReservations)
       .catch(setError);
-    listTables(abortController.signal)
-      .then(setTables)
-      .catch(setError);
+    listTables(abortController.signal).then(setTables).catch(setError);
     return () => abortController.abort();
   }
-
 
   //handlers for next, previous, and today buttons
 
   function nextHandler() {
     const currentDate = params.reservationDate || today();
     const nextDay = next(currentDate);
-    history.push(`/dashboard/${nextDay}`)
+    history.push(`/dashboard/${nextDay}`);
   }
 
   function prevHandler() {
     const currentDate = params.reservationDate || today();
     const prevDay = previous(currentDate);
-    history.push(`/dashboard/${prevDay}`)
+    history.push(`/dashboard/${prevDay}`);
   }
 
   function todayHandler() {
     const currentDate = today();
-    history.push(`/dashboard/${currentDate}`)
+    history.push(`/dashboard/${currentDate}`);
   }
 
   async function finishHandler(table) {
     const abortController = new AbortController();
     // confirmation alert
     // https://stackoverflow.com/questions/9334636/how-to-create-a-dialog-with-ok-and-cancel-options
-    if (window.confirm('Is this table ready to seat new guests? This cannot be undone.')) {
+    if (
+      window.confirm(
+        "Is this table ready to seat new guests? This cannot be undone."
+      )
+    ) {
       const date = params.reservationDate || today();
-      finishTable(table)
-        .catch(setError);
+      finishTable(table).catch(setError);
       updateReservationStatus(table.reservation_id, "finished")
         .then(() => loadDashboard(date))
-        .catch(setError)
+        .catch(setError);
     } else {
       // do nothing with cancel, it automatically closes alert
     }
   }
 
-  
   const reservationsTable = reservations
     .filter((reservation) => {
-      return reservation.reservation_status !== "finished"}
-    )
+      return reservation.reservation_status !== "finished";
+    })
     .map((reservation) => (
       <tr key={reservation.reservation_id}>
         <th scope="row">{reservation.reservation_id}</th>
@@ -83,33 +86,85 @@ function Dashboard() {
         <td>{reservation.reservation_date}</td>
         <td>{reservation.reservation_time}</td>
         <td>{reservation.people}</td>
-        <td data-reservation-id-status={reservation.reservation_id}>{reservation.reservation_status}</td>
-        {reservation.reservation_status === "booked" && <td><a href={`/reservations/${reservation.reservation_id}/seat`} className="btn btn-primary mr-2">Seat</a></td>}
+        <td data-reservation-id-status={reservation.reservation_id}>
+          {reservation.reservation_status}
+        </td>
+        <td>
+          <a
+            href={`/reservations/${reservation.reservation_id}/edit`}
+            className="btn btn-primary mr-2"
+          >
+            Edit
+          </a>
+          {reservation.reservation_status === "booked" && (
+            <a
+              href={`/reservations/${reservation.reservation_id}/seat`}
+              className="btn btn-primary mr-2 mt-2"
+            >
+              Seat
+            </a>
+          )}
+        </td>
       </tr>
     ));
 
-  const tablesTable = tables.map((table) => {    
-    return <tr key={table.table_id}>
-      <th scope="row">{table.table_id}</th>
-      <td>{table.table_name}</td>
-      <td>{table.capacity}</td>
-      <td data-table-id-status={table.table_id}>{table.reservation_id ? "Occupied" : "Free"}</td>
-      {/* Only display this button on tables that have a reservation_id attached (meaning they have been seated) */}
-      <td data-table-id-finish={table.table_id}>{table.reservation_id ? <button type="button" className="btn btn-primary mr-2" onClick={() => finishHandler(table)}>Finish</button> : ""}</td>
-    </tr>
-});
-
+  const tablesTable = tables.map((table) => {
+    return (
+      <tr key={table.table_id}>
+        <th scope="row">{table.table_id}</th>
+        <td>{table.table_name}</td>
+        <td>{table.capacity}</td>
+        <td data-table-id-status={table.table_id}>
+          {table.reservation_id ? "Occupied" : "Free"}
+        </td>
+        {/* Only display this button on tables that have a reservation_id attached (meaning they have been seated) */}
+        <td data-table-id-finish={table.table_id}>
+          {table.reservation_id ? (
+            <button
+              type="button"
+              className="btn btn-primary mr-2"
+              onClick={() => finishHandler(table)}
+            >
+              Finish
+            </button>
+          ) : (
+            ""
+          )}
+        </td>
+      </tr>
+    );
+  });
 
   return (
     <main>
       <h1>Dashboard</h1>
       <div className="d-md-flex mb-3">
-        <h4 className="mb-0">{`Reservations for ${params.reservationDate || today()}`}</h4>
+        <h4 className="mb-0">{`Reservations for ${
+          params.reservationDate || today()
+        }`}</h4>
       </div>
       <div className="d-md-flex mb-3">
-        <button type="button" className="btn btn-primary mr-2" onClick={prevHandler}>Previous</button>
-        <button type="button" className="btn btn-primary mr-2" onClick={todayHandler}>Today</button>
-        <button type="button" className="btn btn-primary mr-2" onClick={nextHandler}>Next</button>
+        <button
+          type="button"
+          className="btn btn-primary mr-2"
+          onClick={prevHandler}
+        >
+          Previous
+        </button>
+        <button
+          type="button"
+          className="btn btn-primary mr-2"
+          onClick={todayHandler}
+        >
+          Today
+        </button>
+        <button
+          type="button"
+          className="btn btn-primary mr-2"
+          onClick={nextHandler}
+        >
+          Next
+        </button>
       </div>
       <ErrorAlert error={error} />
       <div className="row">
@@ -128,12 +183,10 @@ function Dashboard() {
                 <th scope="col"></th>
               </tr>
             </thead>
-            <tbody>
-              {reservationsTable}
-            </tbody>
+            <tbody>{reservationsTable}</tbody>
           </table>
         </div>
-        <div className="col-4" style={{border: "1px solid grey"}}>
+        <div className="col-4" style={{ border: "1px solid grey" }}>
           <table className="table">
             <thead>
               <tr>
@@ -144,9 +197,7 @@ function Dashboard() {
                 <th scope="col"></th>
               </tr>
             </thead>
-            <tbody>
-              {tablesTable}
-            </tbody>
+            <tbody>{tablesTable}</tbody>
           </table>
         </div>
       </div>
