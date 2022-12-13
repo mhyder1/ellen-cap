@@ -8,10 +8,10 @@ async function create(newReservation) {
     .then((createdRecords) => createdRecords[0]);
 }
 
-async function list(reservationDate) {
+async function list(queryParams) {
   return await knex("reservations")
   .select("*")
-  .where({ reservation_date: reservationDate })
+  .where(queryParams)
   .orderBy("reservation_time");
 }
 

@@ -140,8 +140,8 @@ async function create(req, res) {
 }
 
 async function list(req, res) {
-  const reservationDate = req.query.date;
-  const data = await reservationsService.list(reservationDate);
+  // const reservationDate = req.query.date;
+  const data = await reservationsService.list(req.query);
   res.json({ data });
 }
 
