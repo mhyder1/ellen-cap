@@ -1,27 +1,32 @@
-
 const reservationsService = require("./reservations.service.js");
 const hasProperties = require("../errors/hasProperties");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
-
 //validations below
 
 function reservationExists(req, res, next) {
-  console.log("lookign for", req.params.reservation_id)
+  console.log("lookign for", req.params.reservation_id);
   reservationsService
-  .read(req.params.reservation_id)
-  .then((reservation) => {
+    .read(req.params.reservation_id)
+    .then((reservation) => {
       if (reservation) {
-        console.log("Got res", reservation)
+        console.log("Got res", reservation);
         res.locals.reservation = reservation;
         return next();
       }
       next({ status: 404, message: `Reservation cannot be found.` });
-  })
-  .catch(next);
+    })
+    .catch(next);
 }
 
-const hasRequiredProperties = hasProperties("first_name", "last_name", "mobile_number", "reservation_date", "reservation_time", "people");
+const hasRequiredProperties = hasProperties(
+  "first_name",
+  "last_name",
+  "mobile_number",
+  "reservation_date",
+  "reservation_time",
+  "people"
+);
 
 const VALID_PROPERTIES = [
   "first_name",
@@ -77,7 +82,9 @@ function validDate(req, res, next) {
 }
 
 function validTime(req, res, next) {
-  const isValid = /^([0-1][0-9]|2[0-3]):([0-5][0-9])$/.test(req.body.data.reservation_time);
+  const isValid = /^([0-1][0-9]|2[0-3]):([0-5][0-9])$/.test(
+    req.body.data.reservation_time
+  );
   if (isValid) {
     return next();
   }
@@ -102,7 +109,11 @@ function correctTime(req, res, next) {
     });
   }
   const currentTime = new Date();
-  const dataTime = new Date(`${req.body.data.reservation_date.replace("-", "/")} ${req.body.data.reservation_time}`);
+  const dataTime = new Date(
+    `${req.body.data.reservation_date.replace("-", "/")} ${
+      req.body.data.reservation_time
+    }`
+  );
   if (dataTime.getTime() < currentTime.getTime()) {
     return next({
       status: 400,
@@ -113,22 +124,24 @@ function correctTime(req, res, next) {
 }
 
 function hasPeople(req, res, next) {
-  const people = Number(req.body.data.people)
+  const people = Number(req.body.data.people);
   if (people >= 1) {
-     return next()
+    return next();
   } else {
-    return next({status: 400, message: `Invalid field(s): people`})
+    return next({ status: 400, message: `Invalid field(s): people` });
   }
 }
 
 function peopleNumber(req, res, next) {
   // checks the type of the data coming through, because a string version of a number should fail (ie, "2" should fail)
   if (typeof req.body.data.people == "number") {
-    return next({status: 400, message: `Invalid field(s): people amount must be a number.`})
+    return next({
+      status: 400,
+      message: `Invalid field(s): people amount must be a number.`,
+    });
   }
   return next();
 }
-
 
 //validations above
 
@@ -146,7 +159,7 @@ async function list(req, res) {
 }
 
 async function update(req, res) {
-  console.log("body", req.body.data)
+  console.log("body", req.body.data);
   const updatedRes = {
     ...res.locals.reservation,
     reservation_status: req.body.data.status,
@@ -159,6 +172,15 @@ async function update(req, res) {
 
 module.exports = {
   list: asyncErrorBoundary(list),
-  create: [hasOnlyValidProperties, hasRequiredProperties, hasPeople, peopleNumber, validDate, validTime, correctTime, asyncErrorBoundary(create)],
+  create: [
+    hasOnlyValidProperties,
+    hasRequiredProperties,
+    hasPeople,
+    peopleNumber,
+    validDate,
+    validTime,
+    correctTime,
+    asyncErrorBoundary(create),
+  ],
   update: [reservationExists, update],
 };

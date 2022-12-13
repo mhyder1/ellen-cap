@@ -37,7 +37,7 @@ async function fetchJson(url, options, onCancel) {
       return null;
     }
     const payload = await response.json();
-    console.log("got payload", payload)
+    console.log("got payload", payload);
 
     if (payload.error) {
       return Promise.reject({ message: payload.error });
@@ -80,12 +80,16 @@ export async function createReservation(reservation, signal) {
   return await fetchJson(url, options);
 }
 
-export async function updateReservationStatus(reservationId, newStatus, signal) {
+export async function updateReservationStatus(
+  reservationId,
+  newStatus,
+  signal
+) {
   const url = `${API_BASE_URL}/reservations/${reservationId}/status`;
   const options = {
     method: "PUT",
     headers,
-    body: JSON.stringify({ data: {status: newStatus} }),
+    body: JSON.stringify({ data: { status: newStatus } }),
     signal,
   };
   return await fetchJson(url, options);
@@ -118,7 +122,7 @@ export async function seatTable(tableId, reservationId, signal) {
   const options = {
     method: "PUT",
     headers,
-    body: JSON.stringify({ data: {reservation_id: reservationId} }),
+    body: JSON.stringify({ data: { reservation_id: reservationId } }),
     signal,
   };
   return await fetchJson(url, options);
