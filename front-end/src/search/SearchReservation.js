@@ -26,15 +26,17 @@ function SearchReservation() {
     ));
 
     return (
-        <div>
+        <div className="p-3">
             <div className="d-md-flex mb-3">
                 <input name="mobile_number" placeholder="Enter a customer's phone number" value={searchValue} onChange={(e) => setSearchValue(e.target.value)} />
-                <button
-                    className="btn btn-primary"
-                    onClick={searchHandler}
-                >
-                    Find
-                </button>
+                <div className="d-md-flex pl-3">
+                    <button
+                        className="btn btn-primary"
+                        onClick={searchHandler}
+                    >
+                        Find
+                    </button>
+                </div>
             </div>
             
             <div className="d-md-flex mb-3">
