@@ -159,10 +159,9 @@ async function list(req, res) {
 }
 
 async function update(req, res) {
-  console.log("body", req.body.data);
   const updatedRes = {
     ...res.locals.reservation,
-    reservation_status: req.body.data.status,
+    ...req.body.data,
   };
   const reservation = await reservationsService.update(updatedRes);
   res.status(201).json({
@@ -182,5 +181,16 @@ module.exports = {
     correctTime,
     asyncErrorBoundary(create),
   ],
-  update: [reservationExists, update],
+  updateStatus: [reservationExists, update],
+  update: [
+    reservationExists,
+    hasOnlyValidProperties,
+    hasRequiredProperties,
+    hasPeople,
+    peopleNumber,
+    validDate,
+    validTime,
+    correctTime,
+    asyncErrorBoundary(update),
+  ],
 };

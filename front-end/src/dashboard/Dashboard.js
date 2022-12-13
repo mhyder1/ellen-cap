@@ -73,6 +73,24 @@ function Dashboard() {
     }
   }
 
+  async function cancelHandler(reservation) {
+    const abortController = new AbortController();
+    // confirmation alert
+    // https://stackoverflow.com/questions/9334636/how-to-create-a-dialog-with-ok-and-cancel-options
+    if (
+      window.confirm(
+        "Do you want to cancel this reservation? This cannot be undone."
+      )
+    ) {
+      const date = params.reservationDate || today();
+      updateReservationStatus(reservation.reservation_id, "cancelled")
+        .then(() => loadDashboard(date))
+        .catch(setError);
+    } else {
+      // do nothing with cancel, it automatically closes alert
+    }
+  }
+
   const reservationsTable = reservations
     .filter((reservation) => {
       return reservation.reservation_status !== "finished";
@@ -90,12 +108,24 @@ function Dashboard() {
           {reservation.reservation_status}
         </td>
         <td>
-          <a
-            href={`/reservations/${reservation.reservation_id}/edit`}
-            className="btn btn-primary mr-2"
-          >
-            Edit
-          </a>
+          {reservation.reservation_status === "booked" && (
+            <a
+              href={`/reservations/${reservation.reservation_id}/edit`}
+              className="btn btn-primary mr-2"
+            >
+              Edit
+            </a>
+          )}
+          {reservation.reservation_status !== "cancelled" && (
+            <button
+              type="button"
+              className="btn btn-primary mr-2 mt-2"
+              onClick={() => cancelHandler(reservation)}
+              data-reservation-id-cancel={reservation.reservation_id}
+            >
+              Cancel
+            </button>
+          )}
           {reservation.reservation_status === "booked" && (
             <a
               href={`/reservations/${reservation.reservation_id}/seat`}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { listReservations } from "../utils/api";
+import { listReservations, updateReservationStatus } from "../utils/api";
 
 function SearchReservation() {
   const [searchValue, setSearchValue] = useState("");
@@ -10,6 +10,22 @@ function SearchReservation() {
     listReservations({ mobile_number: searchValue })
       .then(setFoundReservations)
       .catch(setError);
+  }
+
+  async function cancelHandler(reservation) {
+    // confirmation alert
+    // https://stackoverflow.com/questions/9334636/how-to-create-a-dialog-with-ok-and-cancel-options
+    if (
+      window.confirm(
+        "Do you want to cancel this reservation? This cannot be undone."
+      )
+    ) {
+      updateReservationStatus(reservation.reservation_id, "cancelled")
+        .then(searchHandler)
+        .catch(setError);
+    } else {
+      // do nothing with cancel, it automatically closes alert
+    }
   }
 
   const reservationsTable = foundReservations.map((reservation) => (
@@ -23,6 +39,26 @@ function SearchReservation() {
       <td>{reservation.people}</td>
       <td data-reservation-id-status={reservation.reservation_id}>
         {reservation.reservation_status}
+      </td>
+      <td>
+        {reservation.reservation_status === "booked" && (
+          <a
+            href={`/reservations/${reservation.reservation_id}/edit`}
+            className="btn btn-primary mr-2"
+          >
+            Edit
+          </a>
+        )}
+        {reservation.reservation_status !== "cancelled" && (
+          <button
+            type="button"
+            className="btn btn-primary mr-2 mt-2"
+            onClick={() => cancelHandler(reservation)}
+            data-reservation-id-cancel={reservation.reservation_id}
+          >
+            Cancel
+          </button>
+        )}
       </td>
     </tr>
   ));
