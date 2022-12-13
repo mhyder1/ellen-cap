@@ -6,6 +6,21 @@ const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
 //validations below
 
+function reservationExists(req, res, next) {
+  console.log("lookign for", req.params.reservation_id)
+  reservationsService
+  .read(req.params.reservation_id)
+  .then((reservation) => {
+      if (reservation) {
+        console.log("Got res", reservation)
+        res.locals.reservation = reservation;
+        return next();
+      }
+      next({ status: 404, message: `Reservation cannot be found.` });
+  })
+  .catch(next);
+}
+
 const hasRequiredProperties = hasProperties("first_name", "last_name", "mobile_number", "reservation_date", "reservation_time", "people");
 
 const VALID_PROPERTIES = [
@@ -130,7 +145,20 @@ async function list(req, res) {
   res.json({ data });
 }
 
+async function update(req, res) {
+  console.log("body", req.body.data)
+  const updatedRes = {
+    ...res.locals.reservation,
+    reservation_status: req.body.data.status,
+  };
+  const reservation = await reservationsService.update(updatedRes);
+  res.status(201).json({
+    data: reservation,
+  });
+}
+
 module.exports = {
   list: asyncErrorBoundary(list),
   create: [hasOnlyValidProperties, hasRequiredProperties, hasPeople, peopleNumber, validDate, validTime, correctTime, asyncErrorBoundary(create)],
+  update: [reservationExists, update],
 };

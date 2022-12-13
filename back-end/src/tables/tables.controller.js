@@ -32,16 +32,18 @@ function hasCapacity(req, res, next) {
     const capacity = Number(req.body.data.capacity)
     if (capacity > 0 ) {
         return next()
+    } else {
+      next({status: 400, message: "capacity must be at least 1 person"})
     }
-    next({status: 400, message: "capactiy must be at least 1 person"})
 }
 
 function hasNameLength(req, res, next) {
-  const name = Number(req.body.data.table_name)
+  const name = req.body.data.table_name
   if (name.length > 1 ) {
       return next()
+  } else {
+    next({status: 400, message: "name must be at least 2 characters"})
   }
-  next({status: 400, message: "capactiy must be at least 1 person"})
 }
 
 function tableOccupied(req, res, next) {
@@ -71,7 +73,6 @@ async function seatReservation(req, res, next) {
     ...req.body.data,
     table_id: res.locals.table.table_id,
   };
-  console.log(updatedTable)
   const table = await tablesService.update(updatedTable);
   res.status(201).json({
     data: table,
@@ -93,10 +94,12 @@ async function list(req, res) {
     });
   }
 
-function destroy(req, res, next) {
-  console.log("we here")
-  const data = await tablesService.delete(res.locals.table.table_id);
-  reviewsService
+async function destroy(req, res, next) {
+  const updatedTableReservation = {
+    ...res.locals.table,
+    reservation_id: null,
+  };
+  const data = await tablesService.destroy(updatedTableReservation);
   res.json({
       data,
   });

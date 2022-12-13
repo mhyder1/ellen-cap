@@ -27,8 +27,11 @@ async function update(updatedTable) {
     .update(updatedTable, "*");
 }
 
-async function destroy(table_id) {
-    return knex("tables").where({ table_id }).del();
+async function destroy(table) {
+    return await knex("tables")
+    .select("*")
+    .where({ table_id: table.table_id })
+    .update(table, "*");
 }
 
 
