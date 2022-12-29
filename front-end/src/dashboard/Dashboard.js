@@ -55,7 +55,6 @@ function Dashboard() {
   }
 
   async function finishHandler(table) {
-    const abortController = new AbortController();
     // confirmation alert
     // https://stackoverflow.com/questions/9334636/how-to-create-a-dialog-with-ok-and-cancel-options
     if (
@@ -74,7 +73,6 @@ function Dashboard() {
   }
 
   async function cancelHandler(reservation) {
-    const abortController = new AbortController();
     // confirmation alert
     // https://stackoverflow.com/questions/9334636/how-to-create-a-dialog-with-ok-and-cancel-options
     if (

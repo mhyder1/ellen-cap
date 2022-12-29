@@ -1,5 +1,5 @@
 const puppeteer = require("puppeteer");
-const { setDefaultOptions } = require('expect-puppeteer');
+const { setDefaultOptions } = require("expect-puppeteer");
 const fs = require("fs");
 const fsPromises = fs.promises;
 
@@ -17,7 +17,7 @@ describe("US-08 - Change an existing reservation - E2E", () => {
   let browser;
   let reservation;
 
-  const dashboardTestPath = `${baseURL}/dashboard?date=2035-01-04`;
+  const dashboardTestPath = `${baseURL}/dashboard?reservation_date=2035-01-04`;
 
   beforeAll(async () => {
     await fsPromises.mkdir("./.screenshots", { recursive: true });
@@ -61,8 +61,7 @@ describe("US-08 - Change an existing reservation - E2E", () => {
         await page.waitForSelector(hrefSelector);
 
         await page.screenshot({
-          path:
-            ".screenshots/us-08-dashboard-edit-click-after-no-change-expected.png",
+          path: ".screenshots/us-08-dashboard-edit-click-after-no-change-expected.png",
           fullPage: true,
         });
 
@@ -96,7 +95,7 @@ describe("US-08 - Change an existing reservation - E2E", () => {
         await cancelButton.click();
 
         await page.waitForResponse((response) => {
-          return response.url().includes("/reservations?date=");
+          return response.url().includes("/reservations?reservation_date=");
         });
 
         await page.waitForTimeout(500);

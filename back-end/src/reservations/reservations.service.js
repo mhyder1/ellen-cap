@@ -9,7 +9,10 @@ async function create(newReservation) {
 
 async function list(queryParams) {
   const value = Object.values(queryParams)[0];
-  const key = Object.keys(queryParams)[0];
+  let key = Object.keys(queryParams)[0];
+  if (key === "date") {
+    key = "reservation_date";
+  }
   return await knex("reservations")
     .select("*")
     .where(key, "ilike", `${value}%`)

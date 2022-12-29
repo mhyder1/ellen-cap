@@ -3,18 +3,11 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { useParams, useHistory } from "react-router-dom";
-import ErrorAlert from "../layout/ErrorAlert";
-import {
-  listTables,
-  seatTable,
-  updateReservation,
-  updateReservationStatus,
-} from "../utils/api";
+import { listTables, seatTable, updateReservationStatus } from "../utils/api";
 
 function SeatReservation() {
   const [tables, setTables] = useState([]);
   const [selectedTable, setSelectedTable] = useState();
-  const [error, setError] = useState();
   const params = useParams();
   const history = useHistory();
 
@@ -24,8 +17,7 @@ function SeatReservation() {
 
   function loadTables() {
     const abortController = new AbortController();
-    setError(null);
-    listTables(abortController.signal).then(setTables).catch(setError);
+    listTables(abortController.signal).then(setTables);
     return () => abortController.abort();
   }
 
@@ -34,12 +26,10 @@ function SeatReservation() {
   }
 
   function submitHandler() {
-    seatTable(selectedTable, params.reservation_id).catch(setError);
-    updateReservationStatus(params.reservation_id, "seated")
-      .then(() => {
-        history.push(`/dashboard`);
-      })
-      .catch(setError);
+    seatTable(selectedTable, params.reservation_id);
+    updateReservationStatus(params.reservation_id, "seated").then(() => {
+      history.push(`/dashboard`);
+    });
   }
 
   function cancelHandler() {
