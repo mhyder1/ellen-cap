@@ -8,9 +8,11 @@ async function create(newReservation) {
 }
 
 async function list(queryParams) {
+  const value = Object.values(queryParams)[0];
+  const key = Object.keys(queryParams)[0];
   return await knex("reservations")
     .select("*")
-    .where(queryParams)
+    .where(key, "ilike", `${value}%`)
     .orderBy("reservation_time");
 }
 

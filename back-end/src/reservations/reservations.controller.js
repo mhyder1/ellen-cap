@@ -37,6 +37,9 @@ const VALID_PROPERTIES = [
   "reservation_time",
   "people",
   "status",
+  "reservation_id",
+  "created_at",
+  "updated_at",
 ];
 
 function hasOnlyValidProperties(req, res, next) {
@@ -160,7 +163,8 @@ function correctStatus(req, res, next) {
   if (
     req.body.data.status !== "booked" &&
     req.body.data.status !== "finished" &&
-    req.body.data.status !== "seated"
+    req.body.data.status !== "seated" &&
+    req.body.data.status !== "cancelled"
   ) {
     return next({
       status: 400,
@@ -171,7 +175,6 @@ function correctStatus(req, res, next) {
 }
 
 function statusNotFinished(req, res, next) {
-  // checks the type of the data coming through, because a string version of a number should fail (ie, "2" should fail)
   if (res.locals.reservation.status === "finished") {
     return next({
       status: 400,
@@ -191,7 +194,6 @@ async function create(req, res) {
 }
 
 async function list(req, res) {
-  // const reservationDate = req.query.date;
   const data = await reservationsService.list(req.query);
   res.json({
     data: data.filter((reservation) => reservation.status !== "finished"),
