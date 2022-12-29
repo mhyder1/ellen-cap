@@ -13,10 +13,19 @@ async function list(queryParams) {
   if (key === "date") {
     key = "reservation_date";
   }
-  return await knex("reservations")
-    .select("*")
-    .where(key, "ilike", `${value}%`)
-    .orderBy("reservation_time");
+  console.log(queryParams);
+  debugger;
+  if (key === "mobile_number") {
+    return await knex("reservations")
+      .select("*")
+      .where(key, "ilike", `${value}%`)
+      .orderBy("reservation_time");
+  } else {
+    return await knex("reservations")
+      .select("*")
+      .where(key, value)
+      .orderBy("reservation_time");
+  }
 }
 
 async function read(reservation_id) {

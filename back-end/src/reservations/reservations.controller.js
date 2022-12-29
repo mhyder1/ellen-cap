@@ -195,6 +195,7 @@ async function create(req, res) {
 
 async function list(req, res) {
   const data = await reservationsService.list(req.query);
+  console.log("data", data);
   res.json({
     data: data.filter((reservation) => reservation.status !== "finished"),
   });
