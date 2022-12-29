@@ -4,12 +4,9 @@ import { listReservations, updateReservationStatus } from "../utils/api";
 function SearchReservation() {
   const [searchValue, setSearchValue] = useState("");
   const [foundReservations, setFoundReservations] = useState([]);
-  const [error, setError] = useState("");
 
   function searchHandler() {
-    listReservations({ mobile_number: searchValue })
-      .then(setFoundReservations)
-      .catch(setError);
+    listReservations({ mobile_number: searchValue }).then(setFoundReservations);
   }
 
   async function cancelHandler(reservation) {
@@ -20,9 +17,9 @@ function SearchReservation() {
         "Do you want to cancel this reservation? This cannot be undone."
       )
     ) {
-      updateReservationStatus(reservation.reservation_id, "cancelled")
-        .then(searchHandler)
-        .catch(setError);
+      updateReservationStatus(reservation.reservation_id, "cancelled").then(
+        searchHandler
+      );
     } else {
       // do nothing with cancel, it automatically closes alert
     }
