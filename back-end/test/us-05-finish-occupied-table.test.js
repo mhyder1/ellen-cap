@@ -56,6 +56,8 @@ describe("US-05 - Finish an occupied table", () => {
         .set("Accept", "application/json")
         .send({ data: { reservation_id: 1 } });
 
+      console.log("sear response", seatResponse.body);
+
       expect(seatResponse.body.error).toBeUndefined();
       expect(seatResponse.status).toBe(200);
 

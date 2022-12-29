@@ -5,16 +5,17 @@ const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 //validations below
 
 function reservationExists(req, res, next) {
-  console.log("lookign for", req.params.reservation_id);
   reservationsService
     .read(req.params.reservation_id)
     .then((reservation) => {
       if (reservation) {
-        console.log("Got res", reservation);
         res.locals.reservation = reservation;
         return next();
       }
-      next({ status: 404, message: `Reservation cannot be found.` });
+      next({
+        status: 404,
+        message: `Reservation ${req.params.reservation_id} cannot be found.`,
+      });
     })
     .catch(next);
 }
@@ -35,6 +36,7 @@ const VALID_PROPERTIES = [
   "reservation_date",
   "reservation_time",
   "people",
+  "status",
 ];
 
 function hasOnlyValidProperties(req, res, next) {
@@ -134,10 +136,46 @@ function hasPeople(req, res, next) {
 
 function peopleNumber(req, res, next) {
   // checks the type of the data coming through, because a string version of a number should fail (ie, "2" should fail)
-  if (typeof req.body.data.people == "number") {
+  if (typeof req.body.data.people !== "number") {
     return next({
       status: 400,
       message: `Invalid field(s): people amount must be a number.`,
+    });
+  }
+  return next();
+}
+
+function statusBooked(req, res, next) {
+  // checks the type of the data coming through, because a string version of a number should fail (ie, "2" should fail)
+  if (req.body.data.status !== "booked") {
+    return next({
+      status: 400,
+      message: `Invalid field(s): status cannot be ${req.body.data.status}.`,
+    });
+  }
+  return next();
+}
+
+function correctStatus(req, res, next) {
+  if (
+    req.body.data.status !== "booked" &&
+    req.body.data.status !== "finished" &&
+    req.body.data.status !== "seated"
+  ) {
+    return next({
+      status: 400,
+      message: `Invalid field(s): status cannot be ${req.body.data.status}.`,
+    });
+  }
+  return next();
+}
+
+function statusNotFinished(req, res, next) {
+  // checks the type of the data coming through, because a string version of a number should fail (ie, "2" should fail)
+  if (res.locals.reservation.status === "finished") {
+    return next({
+      status: 400,
+      message: `Invalid field(s): ${res.locals.reservation.status} reservation cannot be updated.`,
     });
   }
   return next();
@@ -155,7 +193,14 @@ async function create(req, res) {
 async function list(req, res) {
   // const reservationDate = req.query.date;
   const data = await reservationsService.list(req.query);
-  res.json({ data });
+  res.json({
+    data: data.filter((reservation) => reservation.status !== "finished"),
+  });
+}
+async function read(req, res) {
+  res.json({
+    data: res.locals.reservation,
+  });
 }
 
 async function update(req, res) {
@@ -164,33 +209,41 @@ async function update(req, res) {
     ...req.body.data,
   };
   const reservation = await reservationsService.update(updatedRes);
-  res.status(201).json({
-    data: reservation,
+  res.json({
+    data: reservation[0],
   });
 }
 
 module.exports = {
   list: asyncErrorBoundary(list),
+  read: [reservationExists, read],
   create: [
     hasOnlyValidProperties,
     hasRequiredProperties,
-    hasPeople,
-    peopleNumber,
     validDate,
     validTime,
     correctTime,
+    hasPeople,
+    peopleNumber,
+    statusBooked,
     asyncErrorBoundary(create),
   ],
-  updateStatus: [reservationExists, update],
+  updateStatus: [
+    reservationExists,
+    statusNotFinished,
+    correctStatus,
+    asyncErrorBoundary(update),
+  ],
   update: [
     reservationExists,
+    statusNotFinished,
     hasOnlyValidProperties,
     hasRequiredProperties,
-    hasPeople,
-    peopleNumber,
     validDate,
     validTime,
     correctTime,
+    hasPeople,
+    peopleNumber,
     asyncErrorBoundary(update),
   ],
 };
