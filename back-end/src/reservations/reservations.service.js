@@ -13,8 +13,6 @@ async function list(queryParams) {
   if (key === "date") {
     key = "reservation_date";
   }
-  console.log(queryParams);
-  debugger;
   if (key === "mobile_number") {
     return await knex("reservations")
       .select("*")
