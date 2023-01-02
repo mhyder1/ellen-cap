@@ -42,7 +42,8 @@
     "test:start:backend": "npm run test:start --prefix ./../back-end",
     "test:start:frontend": "npx cross-env BROWSER=none NODE_ENV=test react-scripts start",
     "test:unit": "react-scripts test",
-    "predeploy": "npm run build"
+    "predeploy": "npm run build",
+    "deploy": "vercel --prod"
   },
   "eslintConfig": {
     "extends": [

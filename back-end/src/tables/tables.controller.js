@@ -52,6 +52,7 @@ function hasCapacity(req, res, next) {
   }
 }
 function capacityNumber(req, res, next) {
+  console.log(req.body);
   if (typeof req.body.data.capacity === "number") {
     return next();
   } else {
