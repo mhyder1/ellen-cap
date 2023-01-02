@@ -14,7 +14,8 @@ function NewTable() {
   const [error, setError] = useState(null);
 
   const handleTableNameChange = (event) => setTableName(event.target.value);
-  const handleCapacityChange = (event) => setCapacity(event.target.value);
+  const handleCapacityChange = (event) =>
+    setCapacity(parseInt(event.target.value));
 
   function cancelHandler() {
     history.push("/");
@@ -59,7 +60,7 @@ function NewTable() {
           </label>
           <input
             placeholder="Capacity"
-            type="text"
+            type="number"
             className="form-control"
             id="capacity"
             name="capacity"

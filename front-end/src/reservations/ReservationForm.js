@@ -34,7 +34,7 @@ function ReservationForm({ editReservation }) {
   const handleTimeOfReservationChange = (event) =>
     setTimeOfReservation(event.target.value);
   const handleNumberOfPeopleChange = (event) =>
-    setNumberOfPeople(event.target.value);
+    setNumberOfPeople(parseInt(event.target.value));
 
   function cancelHandler() {
     history.push("/");
