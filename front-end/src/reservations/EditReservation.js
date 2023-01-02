@@ -17,8 +17,6 @@ function EditReservation() {
     }
   }, [params.reservation_id]);
 
-  console.log(editReservation);
-
   return <ReservationForm editReservation={editReservation} />;
 }
 

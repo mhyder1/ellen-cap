@@ -4,7 +4,7 @@ const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
 //validations below
 
-function reservationExists(req, res, next) {
+function resExists(req, res, next) {
   reservationsService
     .read(req.params.reservation_id)
     .then((reservation) => {
@@ -150,7 +150,7 @@ function peopleNumber(req, res, next) {
 
 function statusBooked(req, res, next) {
   // checks the type of the data coming through, because a string version of a number should fail (ie, "2" should fail)
-  if (req.body.data.status !== "booked") {
+  if (req.body.data.status && req.body.data.status !== "booked") {
     return next({
       status: 400,
       message: `Invalid field(s): status cannot be ${req.body.data.status}.`,
@@ -161,6 +161,7 @@ function statusBooked(req, res, next) {
 
 function correctStatus(req, res, next) {
   if (
+    req.body.data.status &&
     req.body.data.status !== "booked" &&
     req.body.data.status !== "finished" &&
     req.body.data.status !== "seated" &&
@@ -195,7 +196,6 @@ async function create(req, res) {
 
 async function list(req, res) {
   const data = await reservationsService.list(req.query);
-  console.log("data", data);
   res.json({
     data: data.filter((reservation) => reservation.status !== "finished"),
   });
@@ -219,7 +219,7 @@ async function update(req, res) {
 
 module.exports = {
   list: asyncErrorBoundary(list),
-  read: [reservationExists, read],
+  read: [resExists, read],
   create: [
     hasOnlyValidProperties,
     hasRequiredProperties,
@@ -232,13 +232,13 @@ module.exports = {
     asyncErrorBoundary(create),
   ],
   updateStatus: [
-    reservationExists,
+    resExists,
     statusNotFinished,
     correctStatus,
     asyncErrorBoundary(update),
   ],
   update: [
-    reservationExists,
+    resExists,
     statusNotFinished,
     hasOnlyValidProperties,
     hasRequiredProperties,

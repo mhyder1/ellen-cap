@@ -105,7 +105,33 @@ function reservationExists(req, res, next) {
         message: `Reservation #${req.body.data.reservation_id} cannot be found.`,
       });
     })
-    .catch(next);
+    .catch((e) => {
+      return next({
+        status: 404,
+        message: `Reservation #${req.body.data.reservation_id} cannot be found.`,
+      });
+    });
+}
+
+function tableResExists(req, res, next) {
+  reservationsService
+    .read(res.locals.table.reservation_id)
+    .then((reservation) => {
+      if (reservation) {
+        res.locals.reservation = reservation;
+        return next();
+      }
+      next({
+        status: 404,
+        message: `Reservation #${res.locals.table.reservation_id} cannot be found.`,
+      });
+    })
+    .catch((e) => {
+      return next({
+        status: 404,
+        message: `Reservation #${res.locals.table.reservation_id} cannot be found.`,
+      });
+    });
 }
 
 function tableExists(req, res, next) {
@@ -114,7 +140,6 @@ function tableExists(req, res, next) {
     .then((table) => {
       if (table) {
         res.locals.table = table;
-        next();
       } else {
         return next({
           status: 404,
@@ -128,6 +153,16 @@ function tableExists(req, res, next) {
         message: `Table ${req.params.table_id} cannot be found.`,
       });
     });
+}
+
+function tableUnoccupied(req, res, next) {
+  if (res.locals.table.reservation_id) {
+    return next({
+      status: 400,
+      message: `Table is occupied`,
+    });
+  }
+  return next();
 }
 
 //validations above
@@ -194,9 +229,10 @@ module.exports = {
     hasResId,
     reservationExists,
     tableExists,
+    tableUnoccupied,
     hasSufficientCapacity,
     reservationAlreadySeated,
     seatReservation,
   ],
-  destroy: [tableExists, tableOccupied, reservationExists, destroy],
+  destroy: [tableExists, tableOccupied, tableResExists, destroy],
 };
