@@ -8,11 +8,19 @@ function ReservationForm({ editReservation }) {
 
   useEffect(() => {
     if (editReservation) {
+      // make sure there are no seconds
+      let resTime = editReservation.reservation_time;
+      const resTimeArr = editReservation.reservation_time.split(":");
+      if (resTimeArr.length === 3) {
+        resTimeArr.pop();
+        resTime = resTimeArr.join(":");
+      }
+      console.log(resTime);
       setFirstName(editReservation.first_name);
       setLastName(editReservation.last_name);
       setMobileNumber(editReservation.mobile_number);
       setDateOfReservation(editReservation.reservation_date);
-      setTimeOfReservation(editReservation.reservation_time);
+      setTimeOfReservation(resTime);
       setNumberOfPeople(parseInt(editReservation.people));
     }
   }, [editReservation]);
@@ -64,6 +72,8 @@ function ReservationForm({ editReservation }) {
         .catch(setError);
     }
   }
+
+  console.log(timeOfReservation);
 
   return (
     <>
@@ -134,7 +144,7 @@ function ReservationForm({ editReservation }) {
             type="time"
             className="form-control"
             placeholder="HH:MM"
-            pattern="[0-9]{2}:[0-9]{2}"
+            pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}"
             id="reservation_time"
             name="reservation_time"
             value={timeOfReservation}
