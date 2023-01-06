@@ -4,7 +4,7 @@ const fs = require("fs");
 const fsPromises = fs.promises;
 
 const { containsText } = require("./utils");
-const { createReservation, createTable } = require("./api");
+const { createReservation, createTable, seatReservation } = require("./api");
 
 const baseURL = process.env.BASE_URL || "http://localhost:3000";
 
@@ -44,13 +44,15 @@ describe("US-05 - Finish an occupied table - E2E", () => {
       table = await createTable({
         table_name: `#${Date.now().toString(10)}`,
         capacity: 99,
-        reservation_id: reservation.reservation_id,
+        // reservation_id: reservation.reservation_id,
       });
+
+      await seatReservation(reservation.reservation_id, table.table_id);
 
       page = await browser.newPage();
       page.on("console", onPageConsole);
       await page.setViewport({ width: 1920, height: 1080 });
-      await page.goto(`${baseURL}/dashboard?reservation_date=2035-01-01`, {
+      await page.goto(`${baseURL}/dashboard/2035-01-01`, {
         waitUntil: "networkidle0",
       });
       await page.reload({ waitUntil: "networkidle0" });

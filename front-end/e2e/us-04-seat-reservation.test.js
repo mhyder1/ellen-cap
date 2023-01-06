@@ -235,13 +235,12 @@ describe("US-04 - Seat reservation - E2E", () => {
         reservation_date: "2035-01-01",
         reservation_time: "13:45",
         people: 4,
-        status: "booked",
       });
 
       page = await browser.newPage();
       page.on("console", onPageConsole);
       await page.setViewport({ width: 1920, height: 1080 });
-      await page.goto(`${baseURL}/dashboard?reservation_date=2035-01-01`, {
+      await page.goto(`${baseURL}/dashboard/2035-01-01`, {
         waitUntil: "networkidle0",
       });
     });
@@ -253,17 +252,14 @@ describe("US-04 - Seat reservation - E2E", () => {
         fullPage: true,
       });
 
-      const hrefSelector = `[data-table-id-seat="${reservation.reservation_id}"]`;
+      const hrefSelector = `[href="/reservations/${reservation.reservation_id}/seat"]`;
 
-      await page.waitForSelector(
-        `[data-table-id-seat="${reservation.reservation_id}"]`
-      );
-      // await page.waitForSelector(hrefSelector);
+      await page.waitForSelector(hrefSelector);
 
-      // await page.screenshot({
-      //   path: ".screenshots/us-04-dashboard-seat-button-after.png",
-      //   fullPage: true,
-      // });
+      await page.screenshot({
+        path: ".screenshots/us-04-dashboard-seat-button-after.png",
+        fullPage: true,
+      });
 
       const containsSeat = await page.evaluate((hrefSelector) => {
         return document

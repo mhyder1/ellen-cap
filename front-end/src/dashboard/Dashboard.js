@@ -124,15 +124,15 @@ function Dashboard() {
               Cancel
             </button>
           )}
-          {/* {reservation.status === "booked" && ( */}
-          <a
-            href={`/reservations/${reservation.reservation_id}/seat`}
-            className="btn btn-primary mr-2 mt-2"
-            data-table-id-seat={reservation.reservation_id}
-          >
-            Seat
-          </a>
-          {/* )} */}
+          {reservation.status === "booked" && (
+            <a
+              href={`/reservations/${reservation.reservation_id}/seat`}
+              className="btn btn-primary mr-2 mt-2"
+              data-table-id-seat={reservation.reservation_id}
+            >
+              Seat
+            </a>
+          )}
         </td>
       </tr>
     ));
