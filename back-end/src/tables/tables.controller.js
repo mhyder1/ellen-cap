@@ -179,11 +179,9 @@ async function seatReservation(req, res, next) {
   const table = await tablesService.update(updatedTable);
   const updatedTableReservation = {
     ...res.locals.reservation,
-    // status: "seated",
+    status: "seated",
   };
-  // updatedTableReservation.status = "seated";
-  console.log(updatedTableReservation);
-  // await reservationsService.update(updatedTableReservation);
+  await reservationsService.update(updatedTableReservation);
   res.status(200).json({
     data: table,
   });

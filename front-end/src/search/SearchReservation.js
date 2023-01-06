@@ -70,7 +70,11 @@ function SearchReservation() {
           onChange={(e) => setSearchValue(e.target.value)}
         />
         <div className="d-md-flex pl-3">
-          <button className="btn btn-primary" onClick={searchHandler}>
+          <button
+            className="btn btn-primary"
+            onClick={searchHandler}
+            type="submit"
+          >
             Find
           </button>
         </div>
