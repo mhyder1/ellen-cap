@@ -18,7 +18,7 @@ function NewTable() {
     setCapacity(parseInt(event.target.value));
 
   function cancelHandler() {
-    history.push("/");
+    history.goBack();
   }
 
   function submitHandler(event) {

@@ -17,7 +17,7 @@ async function list() {
 
 //put request to update a table AKA to seat a table:
 async function update(updatedTable) {
-  return await knex("tables")
+  return knex("tables")
     .select("*")
     .where({ table_id: updatedTable.table_id })
     .update(updatedTable, "*");

@@ -25,15 +25,16 @@ function SeatReservation() {
     setSelectedTable(value);
   }
 
-  function submitHandler() {
-    seatTable(selectedTable, params.reservation_id);
-    updateReservationStatus(params.reservation_id, "seated").then(() => {
+  async function submitHandler(e) {
+    e.preventDefault();
+    const table = await seatTable(selectedTable, params.reservation_id);
+    if (table) {
       history.push(`/dashboard`);
-    });
+    }
   }
 
   function cancelHandler() {
-    history.push("/");
+    history.goBack();
   }
 
   return (
@@ -44,17 +45,16 @@ function SeatReservation() {
       <select
         className="form-control"
         id="tables"
-        name="tables"
+        name="table_id"
         value={selectedTable}
         onChange={changeHandler}
         required={true}
       >
-        <option value="">Select a table</option>
         {tables.map((table) => {
           return (
             <option
               value={table.table_id}
-            >{`${table.table_name} - ${table.capacity} people`}</option>
+            >{`${table.table_name} - ${table.capacity}`}</option>
           );
         })}
       </select>
@@ -65,7 +65,7 @@ function SeatReservation() {
       >
         Cancel
       </button>
-      <button className="btn btn-primary" onClick={submitHandler}>
+      <button type="submit" className="btn btn-primary" onClick={submitHandler}>
         Submit
       </button>
     </div>
