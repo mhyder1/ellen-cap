@@ -89,7 +89,7 @@ async function hasSufficientCapacity(req, res, next) {
 
 async function reservationAlreadySeated(req, res, next) {
   const reservation = res.locals.reservation;
-  if (reservation.status === "seated") {
+  if (reservation.reservation_status === "seated") {
     return next({ status: 400, message: `Reservation already seated.` });
   }
   return next();
@@ -179,7 +179,7 @@ async function seatReservation(req, res, next) {
   const table = await tablesService.update(updatedTable);
   const updatedTableReservation = {
     ...res.locals.reservation,
-    status: "seated",
+    reservation_status: "seated",
   };
   await reservationsService.update(updatedTableReservation);
   res.status(200).json({
@@ -209,7 +209,7 @@ async function destroy(req, res, next) {
   const data = await tablesService.destroy(updatedTableReservation);
   const updatedRes = {
     ...res.locals.reservation,
-    status: "finished",
+    reservation_status: "finished",
   };
   await reservationsService.update(updatedRes);
   res.json({

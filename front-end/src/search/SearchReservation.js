@@ -35,10 +35,10 @@ function SearchReservation() {
       <td>{reservation.reservation_time}</td>
       <td>{reservation.people}</td>
       <td data-reservation-id-status={reservation.reservation_id}>
-        {reservation.status}
+        {reservation.reservation_status}
       </td>
       <td>
-        {reservation.status === "booked" && (
+        {reservation.reservation_status === "booked" && (
           <a
             href={`/reservations/${reservation.reservation_id}/edit`}
             className="btn btn-primary mr-2"
@@ -46,7 +46,7 @@ function SearchReservation() {
             Edit
           </a>
         )}
-        {reservation.status !== "cancelled" && (
+        {reservation.reservation_status !== "cancelled" && (
           <button
             type="button"
             className="btn btn-primary mr-2 mt-2"

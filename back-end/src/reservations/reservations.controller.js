@@ -37,6 +37,7 @@ const VALID_PROPERTIES = [
   "reservation_time",
   "people",
   "status",
+  "reservation_status",
   "reservation_id",
   "created_at",
   "updated_at",
@@ -150,10 +151,13 @@ function peopleNumber(req, res, next) {
 
 function statusBooked(req, res, next) {
   // checks the type of the data coming through, because a string version of a number should fail (ie, "2" should fail)
-  if (req.body.data.status && req.body.data.status !== "booked") {
+  if (
+    req.body.data.reservation_status &&
+    req.body.data.reservation_status !== "booked"
+  ) {
     return next({
       status: 400,
-      message: `Invalid field(s): status cannot be ${req.body.data.status}.`,
+      message: `Invalid field(s): status cannot be ${req.body.data.reservation_status}.`,
     });
   }
   return next();
@@ -161,25 +165,25 @@ function statusBooked(req, res, next) {
 
 function correctStatus(req, res, next) {
   if (
-    req.body.data.status &&
-    req.body.data.status !== "booked" &&
-    req.body.data.status !== "finished" &&
-    req.body.data.status !== "seated" &&
-    req.body.data.status !== "cancelled"
+    req.body.data.reservation_status &&
+    req.body.data.reservation_status !== "booked" &&
+    req.body.data.reservation_status !== "finished" &&
+    req.body.data.reservation_status !== "seated" &&
+    req.body.data.reservation_status !== "cancelled"
   ) {
     return next({
       status: 400,
-      message: `Invalid field(s): status cannot be ${req.body.data.status}.`,
+      message: `Invalid field(s): status cannot be ${req.body.data.reservation_status}.`,
     });
   }
   return next();
 }
 
 function statusNotFinished(req, res, next) {
-  if (res.locals.reservation.status === "finished") {
+  if (res.locals.reservation.reservation_status === "finished") {
     return next({
       status: 400,
-      message: `Invalid field(s): ${res.locals.reservation.status} reservation cannot be updated.`,
+      message: `Invalid field(s): ${res.locals.reservation.reservation_status} reservation cannot be updated.`,
     });
   }
   return next();
@@ -197,7 +201,9 @@ async function create(req, res) {
 async function list(req, res) {
   const data = await reservationsService.list(req.query);
   res.json({
-    data: data.filter((reservation) => reservation.status !== "finished"),
+    data: data.filter(
+      (reservation) => reservation.reservation_status !== "finished"
+    ),
   });
 }
 async function read(req, res) {
