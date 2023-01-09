@@ -113,7 +113,7 @@ function ReservationForm({ editReservation }) {
           </label>
           <input
             placeholder="Mobile Number"
-            type="text"
+            type="number"
             className="form-control"
             id="mobile_number"
             name="mobile_number"
