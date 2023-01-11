@@ -189,7 +189,10 @@ function statusNotFinished(req, res, next) {
 //validations above
 
 async function create(req, res) {
-  const newReservation = await reservationsService.create(req.body.data);
+  const newReservation = await reservationsService.create({
+    ...req.body.data,
+    status: "booked",
+  });
   res.status(201).json({
     data: newReservation,
   });
