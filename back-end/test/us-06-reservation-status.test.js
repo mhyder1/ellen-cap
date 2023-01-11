@@ -28,7 +28,7 @@ describe("US-06 - Reservation status", () => {
         reservation_date: "2025-01-01",
         reservation_time: "17:30",
         people: 2,
-        reservation_status: "booked",
+        status: "booked",
       };
 
       const response = await request(app)
@@ -52,7 +52,7 @@ describe("US-06 - Reservation status", () => {
 
     test.each(["seated", "finished"])(
       "returns 400 if status is '%s'",
-      async (reservation_status) => {
+      async (status) => {
         const data = {
           first_name: "first",
           last_name: "last",
@@ -60,7 +60,7 @@ describe("US-06 - Reservation status", () => {
           reservation_date: "2025-01-01",
           reservation_time: "17:30",
           people: 2,
-          reservation_status,
+          status,
         };
 
         const response = await request(app)
@@ -68,7 +68,7 @@ describe("US-06 - Reservation status", () => {
           .set("Accept", "application/json")
           .send({ data });
 
-        expect(response.body.error).toContain(reservation_status);
+        expect(response.body.error).toContain(status);
         expect(response.status).toBe(400);
       }
     );
@@ -89,7 +89,7 @@ describe("US-06 - Reservation status", () => {
       const response = await request(app)
         .put("/reservations/99/status")
         .set("Accept", "application/json")
-        .send({ data: { reservation_status: "seated" } });
+        .send({ data: { status: "seated" } });
 
       expect(response.body.error).toContain("99");
       expect(response.status).toBe(404);
@@ -101,7 +101,7 @@ describe("US-06 - Reservation status", () => {
       const response = await request(app)
         .put(`/reservations/${reservationOne.reservation_id}/status`)
         .set("Accept", "application/json")
-        .send({ data: { reservation_status: "unknown" } });
+        .send({ data: { status: "unknown" } });
 
       expect(response.body.error).toContain("unknown");
       expect(response.status).toBe(400);
@@ -110,7 +110,7 @@ describe("US-06 - Reservation status", () => {
     test("returns 400 if status is currently finished (a finished reservation cannot be updated)", async () => {
       expect(reservationOne).not.toBeUndefined();
 
-      reservationOne.reservation_status = "finished";
+      reservationOne.status = "finished";
       await knex("reservations")
         .where({ reservation_id: reservationOne.reservation_id })
         .update(reservationOne, "*");
@@ -118,26 +118,23 @@ describe("US-06 - Reservation status", () => {
       const response = await request(app)
         .put(`/reservations/${reservationOne.reservation_id}/status`)
         .set("Accept", "application/json")
-        .send({ data: { reservation_status: "seated" } });
+        .send({ data: { status: "seated" } });
 
       expect(response.body.error).toContain("finished");
       expect(response.status).toBe(400);
     });
 
     test.each(["booked", "seated", "finished"])(
-      "returns 200 for reservation_status '%s'",
+      "returns 200 for status '%s'",
       async (status) => {
         expect(reservationOne).not.toBeUndefined();
 
         const response = await request(app)
           .put(`/reservations/${reservationOne.reservation_id}/status`)
           .set("Accept", "application/json")
-          .send({ data: { reservation_status } });
+          .send({ data: { status } });
 
-        expect(response.body.data).toHaveProperty(
-          "reservation_status",
-          reservation_status
-        );
+        expect(response.body.data).toHaveProperty("status", status);
         expect(response.status).toBe(200);
       }
     );
@@ -172,10 +169,7 @@ describe("US-06 - Reservation status", () => {
         .set("Accept", "application/json");
 
       expect(reservationResponse.body.error).toBeUndefined();
-      expect(reservationResponse.body.data).toHaveProperty(
-        "reservation_status",
-        "seated"
-      );
+      expect(reservationResponse.body.data).toHaveProperty("status", "seated");
       expect(reservationResponse.status).toBe(200);
     });
 
@@ -238,7 +232,7 @@ describe("US-06 - Reservation status", () => {
 
       expect(reservationResponse.body.error).toBeUndefined();
       expect(reservationResponse.body.data).toHaveProperty(
-        "reservation_status",
+        "status",
         "finished"
       );
       expect(reservationResponse.status).toBe(200);
@@ -287,7 +281,7 @@ describe("US-06 - Reservation status", () => {
       expect(reservationsResponse.body.error).toBeUndefined();
 
       const finishedReservations = reservationsResponse.body.data.filter(
-        (reservation) => reservation.reservation_status === "finished"
+        (reservation) => reservation.status === "finished"
       );
 
       expect(finishedReservations).toHaveLength(0);

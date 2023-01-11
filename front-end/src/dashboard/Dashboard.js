@@ -91,7 +91,7 @@ function Dashboard() {
 
   const reservationsTable = reservations
     .filter((reservation) => {
-      return reservation.reservation_status !== "finished";
+      return reservation.status !== "finished";
     })
     .map((reservation) => (
       <tr key={reservation.reservation_id}>
@@ -103,10 +103,10 @@ function Dashboard() {
         <td>{reservation.reservation_time}</td>
         <td>{reservation.people}</td>
         <td data-reservation-id-status={reservation.reservation_id}>
-          {reservation.reservation_status}
+          {reservation.status}
         </td>
         <td>
-          {reservation.reservation_status == "booked" && (
+          {reservation.status === "booked" && (
             <a
               href={`/reservations/${reservation.reservation_id}/edit`}
               className="btn btn-primary mr-2"
@@ -114,7 +114,7 @@ function Dashboard() {
               Edit
             </a>
           )}
-          {reservation.reservation_status != "cancelled" && (
+          {reservation.status !== "cancelled" && (
             <button
               type="button"
               className="btn btn-primary mr-2 mt-2"
@@ -124,7 +124,7 @@ function Dashboard() {
               Cancel
             </button>
           )}
-          {reservation.reservation_status == "booked" && (
+          {reservation.status === "booked" && (
             <a
               href={`/reservations/${reservation.reservation_id}/seat`}
               className="btn btn-primary mr-2 mt-2"

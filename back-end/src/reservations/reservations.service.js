@@ -31,6 +31,7 @@ async function read(reservation_id) {
 }
 
 async function update(updateReservation) {
+  console.log("made it to updating res");
   return await knex("reservations")
     .select("*")
     .where({ reservation_id: updateReservation.reservation_id })

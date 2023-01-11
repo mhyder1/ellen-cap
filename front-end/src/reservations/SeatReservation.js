@@ -3,7 +3,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { useParams, useHistory } from "react-router-dom";
-import { listTables, seatTable, updateReservationStatus } from "../utils/api";
+import { listTables, seatTable } from "../utils/api";
 
 function SeatReservation() {
   const [tables, setTables] = useState([]);
@@ -28,6 +28,7 @@ function SeatReservation() {
   async function submitHandler(e) {
     e.preventDefault();
     const table = await seatTable(selectedTable, params.reservation_id);
+    console.log("table", table);
     if (table) {
       history.push(`/dashboard`);
     }

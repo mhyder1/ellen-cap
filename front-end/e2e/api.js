@@ -6,7 +6,10 @@ const API_BASE_URL =
 /**
  * Defines the default headers for these functions to work with `json-server`
  */
-const headers = { "Content-Type": "application/json" };
+const headers = {
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Origin": "*",
+};
 
 /**
  * Fetch `json` from the specified URL and handle error status codes and ignore `AbortError`s
@@ -84,6 +87,7 @@ async function seatReservation(reservation_id, table_id) {
     method: "PUT",
     body: JSON.stringify({ data: { reservation_id } }),
     headers,
+    signal,
   };
   return await fetchJson(url, options, {});
 }
