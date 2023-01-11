@@ -87,7 +87,6 @@ async function seatReservation(reservation_id, table_id) {
     method: "PUT",
     body: JSON.stringify({ data: { reservation_id } }),
     headers,
-    signal,
   };
   return await fetchJson(url, options, {});
 }
