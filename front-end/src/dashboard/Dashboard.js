@@ -197,7 +197,7 @@ function Dashboard() {
       </div>
       <ErrorAlert error={error} />
       <div className="row">
-        <div className="col-8">
+        <div className="sm-col-8">
           <table className="table">
             <thead>
               <tr>
@@ -215,7 +215,7 @@ function Dashboard() {
             <tbody>{reservationsTable}</tbody>
           </table>
         </div>
-        <div className="col-4" style={{ border: "1px solid grey" }}>
+        <div className="sm-col-3" style={{ border: "1px solid grey" }}>
           <table className="table">
             <thead>
               <tr>
