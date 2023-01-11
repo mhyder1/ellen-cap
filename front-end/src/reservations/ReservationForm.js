@@ -59,7 +59,7 @@ function ReservationForm({ editReservation }) {
       people: numberOfPeople,
     };
     if (!editReservation) {
-      createReservation(reservation)
+      createReservation({ ...reservation, status: "booked" })
         .then(() => {
           history.push(`/dashboard/${reservation.reservation_date}`);
         })
@@ -73,7 +73,13 @@ function ReservationForm({ editReservation }) {
     }
   }
 
-  console.log(timeOfReservation);
+  function isNumberKey(evt) {
+    const charCode = evt.which ? evt.which : evt.keyCode;
+    if (charCode != 45 && charCode > 31 && (charCode < 48 || charCode > 57))
+      return false;
+
+    return true;
+  }
 
   return (
     <>
@@ -108,7 +114,12 @@ function ReservationForm({ editReservation }) {
           />
         </div>
         <div className="mb-3">
-          <label for="mobile_number" className="form-label">
+          <label
+            for="mobile_number"
+            className="form-label"
+            onKeyDown={isNumberKey}
+            onKeyUp={isNumberKey}
+          >
             Mobile Number
           </label>
           <input
