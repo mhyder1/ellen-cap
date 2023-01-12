@@ -58,19 +58,29 @@ function ReservationForm({ editReservation }) {
       reservation_time: timeOfReservation,
       people: numberOfPeople,
     };
+    const abortController = new AbortController();
+
     if (!editReservation) {
-      createReservation({ ...reservation, status: "booked" })
+      createReservation(
+        { ...reservation, status: "booked" },
+        abortController.signal
+      )
         .then(() => {
           history.push(`/dashboard/${reservation.reservation_date}`);
         })
         .catch(setError);
     } else {
-      updateReservation(reservation, editReservation.reservation_id)
+      updateReservation(
+        reservation,
+        editReservation.reservation_id,
+        abortController.signal
+      )
         .then(() => {
           history.push(`/dashboard/${reservation.reservation_date}`);
         })
         .catch(setError);
     }
+    return () => abortController.abort();
   }
 
   function isNumberKey(evt) {

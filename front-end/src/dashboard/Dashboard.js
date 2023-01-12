@@ -73,6 +73,7 @@ function Dashboard() {
   }
 
   async function cancelHandler(reservation) {
+    const abortController = new AbortController();
     // confirmation alert
     // https://stackoverflow.com/questions/9334636/how-to-create-a-dialog-with-ok-and-cancel-options
     if (
@@ -81,12 +82,17 @@ function Dashboard() {
       )
     ) {
       const date = params.reservationDate || today();
-      updateReservationStatus(reservation.reservation_id, "cancelled")
+      updateReservationStatus(
+        reservation.reservation_id,
+        "cancelled",
+        abortController.signal
+      )
         .then(() => loadDashboard(date))
         .catch(setError);
     } else {
       // do nothing with cancel, it automatically closes alert
     }
+    return () => abortController.abort();
   }
 
   const reservationsTable = reservations
